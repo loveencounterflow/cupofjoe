@@ -36,7 +36,8 @@ test                      = require 'guy-test'
     expand }  = cupofjoe.export()
   #.........................................................................................................
   cram null, ->
-    cram 'pre'
+    cram 'pre1'
+    cram 'pre2', 'wat'
     cram 'one', ->
       cram 'two', 42
       cram 'three', ->
@@ -46,9 +47,11 @@ test                      = require 'guy-test'
     cram 'post'
   ds = expand()
   info rpr ds
+  info jr ds.flat Infinity
   # urge '^4443^', ds
   T.eq ds, [
-    [ 'pre' ],
+    [ 'pre1' ],
+    [ 'pre2', 'wat' ],
     [ 'one',
       [ 'two', 42 ],
       [ 'three',
@@ -77,7 +80,9 @@ test                      = require 'guy-test'
     return cram d1, content..., d2
   #.........................................................................................................
   cram null, ->
-    h 'pre'
+    h 'pre1'
+    cram null
+    h 'pre2', 'wat'
     h 'one', ->
       h 'two', ( new_datom '^text', text: '42' )
       h 'three', ->
@@ -90,7 +95,8 @@ test                      = require 'guy-test'
   ds = expand()
   info jr ds
   T.eq ds, [
-    [ { '$key': '^pre' } ],
+    [ { '$key': '^pre1' } ],
+    [ { '$key': '<pre2' }, 'wat', { '$key': '>pre2' } ],
     [ { '$key': '<one' },
       [ { '$key': '<two' },
         { text: '42', '$key': '^text' },
@@ -106,6 +112,63 @@ test                      = require 'guy-test'
         { '$key': '>three' } ],
       { '$key': '>one' } ],
     [ { '$key': '^post' } ] ]
+  #.........................................................................................................
+  done() if done?
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "CUP demo 2 flat" ] = ( T, done ) ->
+  cupofjoe = new ( require '../..' ).Cupofjoe { flatten: true, }
+  { cram
+    expand }  = cupofjoe.export()
+  #.........................................................................................................
+  DATOM                     = new ( require 'datom' ).Datom { dirty: false, }
+  { new_datom
+    lets
+    select }                = DATOM.export()
+  #.........................................................................................................
+  h = ( tagname, content... ) ->
+    if content.length is 0
+      d = new_datom "^#{tagname}"
+      return cram d, content...
+    d1 = new_datom "<#{tagname}"
+    d2 = new_datom ">#{tagname}"
+    return cram d1, content..., d2
+  #.........................................................................................................
+  cram null, ->
+    h 'pre1'
+    cram null
+    h 'pre2', 'wat'
+    h 'one', ->
+      h 'two', ( new_datom '^text', text: '42' )
+      h 'three', ->
+        h 'four', ->
+          h 'five', ->
+            h 'six', ->
+              cram ( new_datom '^text', text: 'bottom' )
+    h 'post'
+  urge rpr cupofjoe.collector
+  ds = expand()
+  info jr ds
+  T.eq ds, [
+    { '$key': '^pre1' }
+    { '$key': '<pre2' }
+    'wat',
+    { '$key': '>pre2' }
+    { '$key': '<one' }
+    { '$key': '<two' }
+    { text: '42', '$key': '^text' }
+    { '$key': '>two' }
+    { '$key': '<three' }
+    { '$key': '<four' }
+    { '$key': '<five' }
+    { '$key': '<six' }
+    { text: 'bottom', '$key': '^text' }
+    { '$key': '>six' }
+    { '$key': '>five' }
+    { '$key': '>four' }
+    { '$key': '>three' }
+    { '$key': '>one' }
+    { '$key': '^post' } ]
   #.........................................................................................................
   done() if done?
 
@@ -131,40 +194,76 @@ test                      = require 'guy-test'
   done() if done?
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "CUP configuration" ] = ( T, done ) ->
-  cupofjoe = new ( require '../..' ).Cupofjoe()
+@[ "CUP demo reformat" ] = ( T, done ) ->
+  cupofjoe = new ( require '../..' ).Cupofjoe { flatten: true, }
   { cram
-    expand
-    expand_async } = cupofjoe.export()
+    expand } = cupofjoe.export()
   #.........................................................................................................
-  sleep   = ( dts ) -> new Promise ( done ) => setTimeout done, dts * 1000
-  request = -> await sleep 0; return 'request complete'
+  h = ( tagname, content... ) ->
+    return cram content...      if ( not tagname? ) or ( tagname is 'text' )
+    return cram "<#{tagname}/>" if content.length is 0
+    return cram "<#{tagname}>", content..., "</#{tagname}>"
   #.........................................................................................................
-  cram null, ->
-    cram 'pre'
-    cram 'one', ->
-      cram 'two', await request()
-  # urge rpr CUP.collector
-  ds = await expand_async()
-  info jr ds
-  T.eq ds, [ [ 'pre' ], [ 'one', [ 'two', 'request complete' ] ] ]
+  h 'paper', ->
+    h 'article', ->
+      h 'title', "Some Thoughts on Nested Data Structures"
+      h 'par', ->
+        h 'text',   "A interesting "
+        h 'em',     "fact"
+        h 'text',   " about CupOfJoe is that you "
+        h 'em',     "can"
+        h 'text',   " nest with both sequences and function calls."
+    h 'conclusion', ->
+      h 'text',   "With CupOfJoe, you don't need brackets."
+  html = expand().join '|'
+  info jr html
+  # info html
+  T.eq html, "<paper>|<article>|<title>|Some Thoughts on Nested Data Structures|</title>|<par>|A interesting |<em>|fact|</em>| about CupOfJoe is that you |<em>|can|</em>| nest with both sequences and function calls.|</par>|</article>|<conclusion>|With CupOfJoe, you don't need brackets.|</conclusion>|</paper>"
   #.........................................................................................................
   done() if done?
 
 # #-----------------------------------------------------------------------------------------------------------
-# @[ "expand()" ] = ( T, done ) ->
+# @[ "_CUP cram w/out functions" ] = ( T, done ) ->
+#   # debug ( k for k of ( require '../..' ) ); process.exit 1
 #   cupofjoe = new ( require '../..' ).Cupofjoe()
 #   { cram
-#     expand
-#     expand_async } = cupofjoe.export()
+#     expand }  = cupofjoe.export()
+#   #.........................................................................................................
+#   cram null
+#   cram null, null
+#   cram 'first'
+#   cram [ 'one', ]
+#   cram 'two', 'three', 'four'
+#   cram undefined, null
+#   cram 'five', 'six', 'seven', 'eight'
+#   result = expand()
+#   urge '^7777^', result
+#   T.eq result, ["first","one",["two","three","four"],["five","six","seven","eight"]]
+#   cram 'ten'
+#   result = expand()
+#   T.eq result, ["first","one",["two","three","four"],["five","six","seven","eight"],["ten"]]
+#   #.........................................................................................................
+#   done() if done?
+
+# #-----------------------------------------------------------------------------------------------------------
+# @[ "_CUP _unwrap" ] = ( T, done ) ->
+#   cupofjoe = new ( require '../..' ).Cupofjoe()
+#   { _unwrap
+#     expand }  = cupofjoe.export()
 #   #.........................................................................................................
 #   probes_and_matchers = [
 #     [[],[]]
+#     [[null],[]]
+#     [[null,null],[]]
+#     [[null,null,undefined],[]]
+#     [[null,null,[]],[]]
+#     [[null,null,[[]]],[]]
+#     [[['foo']],['foo']]
 #     [['a','b',['c']],['a','b',['c']]]
 #     ]
 #   for [ probe, matcher, error, ] in probes_and_matchers
 #     await T.perform probe, matcher, error, -> new Promise ( resolve ) ->
-#       resolve expand probe
+#       resolve _unwrap probe
 #   #.........................................................................................................
 #   done()
 #   return null
@@ -174,7 +273,8 @@ test                      = require 'guy-test'
 ############################################################################################################
 if module is require.main then do =>
   test @
-  # @[ "CUP demo 2" ]()
+  # test @[ "CUP cram w/out functions" ]
+  # @[ "CUP demo 1" ]()
   # test @[ "expand()" ]
   # test @[ "CUP configuration" ]
   # test @[ "CUP demo 2" ]

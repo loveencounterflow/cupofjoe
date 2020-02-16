@@ -47,8 +47,16 @@ Multimix                  = require 'multimix'
 
 
 #-----------------------------------------------------------------------------------------------------------
-@expand       = ->        @_expand        @collector; return @_unwrap @collector
-@expand_async = -> await  @_expand_async  @collector; return @_unwrap @collector
+@expand = ->
+  @_expand @collector
+  @collector = @collector.flat Infinity if @settings.flatten
+  return @_unwrap @collector
+
+#-----------------------------------------------------------------------------------------------------------
+@expand_async = ->
+  await @_expand_async @collector
+  @collector = @collector.flat Infinity if @settings.flatten
+  return @_unwrap @collector
 
 #-----------------------------------------------------------------------------------------------------------
 @_expand = ( list ) ->
@@ -56,7 +64,9 @@ Multimix                  = require 'multimix'
   loop
     idx++; break if idx > list.length - 1
     unless ( x = list[ idx ] )? then list.splice idx, 1; idx--; continue
-    if ( type = type_of x ) is 'list' then @_expand x
+    if ( type = type_of x ) is 'list'
+      if ( x = x.filter ( e ) -> e? ).length is 0 then list.splice idx, 1; idx--; continue
+      @_expand             list[ idx ] = x
     else if type is 'function'        then @target = []; x(); list[ idx .. idx ] = @target; idx--
     else if type is 'asyncfunction'
       throw new Error "^7767^ unable to synchronically expand async function"
@@ -68,7 +78,9 @@ Multimix                  = require 'multimix'
   loop
     idx++; break if idx > list.length - 1
     unless ( x = list[ idx ] )? then list.splice idx, 1; idx--; continue
-    if ( type = type_of x ) is 'list' then await @_expand_async x
+    if ( type = type_of x ) is 'list'
+      if ( x = x.filter ( e ) -> e? ).length is 0 then list.splice idx, 1; idx--; continue
+      await @_expand_async list[ idx ] = x
     else if type is 'function'        then @target = [];        x(); list[ idx .. idx ] = @target; idx--
     else if type is 'asyncfunction'   then @target = []; await  x(); list[ idx .. idx ] = @target; idx--
   return null
@@ -76,12 +88,15 @@ Multimix                  = require 'multimix'
 #-----------------------------------------------------------------------------------------------------------
 @_unwrap = ( x ) ->
   return x unless isa.list x
+  # x = x.filter ( e ) -> e? and not ( ( isa.list e ) and ( e.length is 0 ) )
   return x unless x.length is 1
   return x unless isa.list x[ 0 ]
   return @_unwrap x[ 0 ]
 
 #-----------------------------------------------------------------------------------------------------------
-@cram = ( x... ) -> @target.push x; return null
+@cram = ( x... ) ->
+  @target.push x
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
 MAIN = @
@@ -90,11 +105,11 @@ class Cupofjoe extends Multimix
   # @extend MAIN, { overwrite: false, }
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ->
+  constructor: ( settings = null) ->
     super()
-    # @export @target if @target?
-    @collector = []
-    @target    = @collector
+    @settings   = { { flatten: false, }..., settings..., }
+    @collector  = []
+    @target     = @collector
     return @
 
 #-----------------------------------------------------------------------------------------------------------
