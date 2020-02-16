@@ -1,0 +1,35 @@
+{
+  "name": "cupofjoe",
+  "version": "0.0.0",
+  "description": "Build generic nested structures with a Teacup-like syntax",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "coffee --map -o lib -c src",
+    "test": "npm run build && node lib/tests/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loveencounterflow/cupofjoe.git"
+  },
+  "keywords": [
+    "text",
+    "processing",
+    "html",
+    "nested"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/loveencounterflow/cupofjoe/issues"
+  },
+  "homepage": "https://github.com/loveencounterflow/cupofjoe#readme",
+  "dependencies": {
+    "cnd": "^5.3.0",
+    "intertype": "^3.1.1",
+    "multimix": "^2.1.4"
+  },
+  "devDependencies": {
+    "datom": "^3.0.1",
+    "guy-test": "^1.4.2"
+  }
+}
