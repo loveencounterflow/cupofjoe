@@ -48,13 +48,32 @@ remove_nulls_etc = ( list ) ->
   idx = -1
   loop
     idx++; break if idx > list.length - 1
-    unless ( x = list[ idx ] )? then list.splice idx, 1; idx--; continue
-    if ( type = type_of x ) is 'list'
-      if ( x = x.filter ( e ) -> e? ).length is 0 then list.splice idx, 1; idx--; continue
-      @_expand             list[ idx ] = x
-    else if type is 'function'        then @target = []; x(); list[ idx .. idx ] = @target; idx--
-    else if type is 'asyncfunction'
-      throw new Error "^7767^ unable to synchronically expand async function"
+    #.......................................................................................................
+    unless ( x = list[ idx ] )?
+      list.splice idx, 1
+      idx--
+      continue
+    #.......................................................................................................
+    switch type = type_of x
+      #.....................................................................................................
+      when 'list'
+        ### remove nulls and undefined elements, skip empty lists ###
+        x = remove_nulls_etc x
+        if x.length is 0
+          list.splice idx, 1
+          idx--
+          continue
+        @_expand list[ idx ] = x
+      #.....................................................................................................
+      when 'function'
+        @target = []
+        x()
+        list[ idx .. idx ] = @target
+        idx--
+        continue
+      #.....................................................................................................
+      when 'asyncfunction'
+        throw new Error "^coj/_expand@7767^ unable to use `expand` for async function; use `expand_async()` instead"
   return null
 
 #-----------------------------------------------------------------------------------------------------------
