@@ -26,25 +26,10 @@ urge                      = CND.get_logger 'urge',      badge
 { jr }                    = CND
 Multimix                  = require 'multimix'
 
-
-# #-----------------------------------------------------------------------------------------------------------
-# get_nesting_level = ( list ) ->
-#   validate.list list
-#   return _get_nesting_level list, -1, -1
-# _get_nesting_level = ( list, level, max_nesting_level ) ->
-#   level            += 1
-#   max_nesting_level = Math.max max_nesting_level, level
-#   for x in list
-#     continue unless isa.list x
-#     max_nesting_level = Math.max max_nesting_level, _get_nesting_level x, level, max_nesting_level
-#   return max_nesting_level
-# urge '^897^', get_nesting_level []
-# urge '^897^', get_nesting_level [ 1, ]
-# urge '^897^', get_nesting_level [[]]
-# urge '^897^', get_nesting_level [ [ 4, ], ]
-# urge '^897^', get_nesting_level [[[]]]
-# urge '^897^', get_nesting_level [ 1, [ 2, 4, [ 5, ], [ 6, ], ], ]
-
+#-----------------------------------------------------------------------------------------------------------
+remove_nulls_etc = ( list ) ->
+  return list.filter ( e ) -> e? ### mutating variant ###
+  # return ( e for e in list when e? ) ### non-mutating variant ###
 
 #-----------------------------------------------------------------------------------------------------------
 @expand = ->
