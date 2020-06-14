@@ -90,11 +90,19 @@ Output (reformatted for readability):
             ⇓
          CoffeeKup
             ⇓
-   { CoffeeCup, DryKup, }
+  CoffeeCup    DryKup  =>  kup
             ⇓
           Teacup
-                            ⇓
-                     CoffeNode-Teacup
+            ⇓
+     CoffeNode-Teacup
             ⇓
          CupOfJoe
 ```
+
+* kup
+  * https://github.com/snd/kup
+  * forget underpowered template languages - build HTML with the full power of coffeescript
+
+* DryKup
+  * https://github.com/mark-hahn/drykup
+  * A CoffeScript html generator compatible with CoffeeKup but without the magic.
