@@ -48,32 +48,33 @@ remove_nulls_etc = ( list ) ->
   idx = -1
   loop
     idx++; break if idx > list.length - 1
+    value = list[ idx ]
     #.......................................................................................................
-    unless ( x = list[ idx ] )?
-      list.splice idx, 1
-      idx--
-      continue
-    #.......................................................................................................
-    switch type = type_of x
+    switch type = type_of value
       #.....................................................................................................
       when 'list'
         ### remove nulls and undefined elements, skip empty lists ###
-        x = remove_nulls_etc x
-        if x.length is 0
+        value = remove_nulls_etc value
+        if value.length is 0
           list.splice idx, 1
           idx--
           continue
-        @_expand list[ idx ] = x
+        @_expand list[ idx ] = value
       #.....................................................................................................
       when 'function'
         @target = []
-        x()
+        value()
         list[ idx .. idx ] = @target
         idx--
         continue
       #.....................................................................................................
       when 'asyncfunction'
         throw new Error "^coj/_expand@7767^ unable to use `expand` for async function; use `expand_async()` instead"
+    #.......................................................................................................
+    unless value?
+      list.splice idx, 1
+      idx--
+      continue
   return null
 
 #-----------------------------------------------------------------------------------------------------------
