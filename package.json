@@ -5,7 +5,7 @@
   "main": "lib/main.js",
   "scripts": {
     "build": "coffee --map -o lib -c src",
-    "test": "npm run build && node lib/tests/main.js"
+    "test": "node lib/tests/main.js"
   },
   "repository": {
     "type": "git",
@@ -24,12 +24,12 @@
   },
   "homepage": "https://github.com/loveencounterflow/cupofjoe#readme",
   "dependencies": {
-    "cnd": "^5.3.0",
-    "intertype": "^3.1.1",
-    "multimix": "^2.1.4"
+    "cnd": "^9.0.0",
+    "intertype": "^7.0.1",
+    "multimix": "^4.0.0"
   },
   "devDependencies": {
-    "datom": "^3.0.1",
-    "guy-test": "^1.4.2"
+    "datom": "^5.0.0",
+    "guy-test": "^4.0.0"
   }
 }
