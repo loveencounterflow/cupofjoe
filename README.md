@@ -57,7 +57,7 @@ h 'paper', ->
   h 'article', ->
     h 'title', "Some Thoughts on Nested Data Structures"
     h 'par', ->
-      h 'text',   "A interesting "
+      h 'text',   "An interesting "
       h 'em',     "fact"
       h 'text',   " about CupOfJoe is that you "
       h 'em',     "can"
@@ -75,7 +75,7 @@ Output (reformatted for readability):
   <article>
     <title>Some Thoughts on Nested Data Structures</title>
     <par>
-      A interesting <em>fact</em> about CupOfJoe is that you
+      An interesting <em>fact</em> about CupOfJoe is that you
       <em>can</em> nest with both sequences and function calls.
       </par>
     </article>
