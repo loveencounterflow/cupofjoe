@@ -27,7 +27,7 @@ urge                      = CND.get_logger 'urge',      badge
 Multimix                  = require 'multimix'
 
 #-----------------------------------------------------------------------------------------------------------
-remove_nulls_etc = ( list ) ->
+remove_notgiven = ( list ) ->
   return list.filter ( e ) -> e? ### mutating variant ###
   # return ( e for e in list when e? ) ### non-mutating variant ###
 
@@ -38,36 +38,20 @@ remove_nulls_etc = ( list ) ->
   return @_unwrap @collector
 
 #-----------------------------------------------------------------------------------------------------------
-@expand_async = ->
-  await @_expand_async @collector
-  @collector = @collector.flat Infinity if @settings.flatten
-  return @_unwrap @collector
-
-#-----------------------------------------------------------------------------------------------------------
 @_expand = ( list ) ->
   idx = -1
   loop
     idx++; break if idx > list.length - 1
     unless ( x = list[ idx ] )? then list.splice idx, 1; idx--; continue
     if ( type = type_of x ) is 'list'
-      if ( x = x.filter ( e ) -> e? ).length is 0 then list.splice idx, 1; idx--; continue
-      @_expand             list[ idx ] = x
-    else if type is 'function'        then @target = []; x(); list[ idx .. idx ] = @target; idx--
+      if ( x = remove_notgiven x ).length is 0 then list.splice idx, 1; idx--; continue
+      @_expand list[ idx ] = x
+    else if type is 'function'
+      @target = []; x(); list[ idx .. idx ] = @target; idx--
     else if type is 'asyncfunction'
-      throw new Error "^7767^ unable to synchronically expand async function"
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_expand_async = ( list ) ->
-  idx = -1
-  loop
-    idx++; break if idx > list.length - 1
-    unless ( x = list[ idx ] )? then list.splice idx, 1; idx--; continue
-    if ( type = type_of x ) is 'list'
-      if ( x = x.filter ( e ) -> e? ).length is 0 then list.splice idx, 1; idx--; continue
-      await @_expand_async list[ idx ] = x
-    else if type is 'function'        then @target = [];        x(); list[ idx .. idx ] = @target; idx--
-    else if type is 'asyncfunction'   then @target = []; await  x(); list[ idx .. idx ] = @target; idx--
+      throw new Error "^7767^ at index #{idx}: unable to synchronically expand async function"
+    else if type is 'promise'
+      throw new Error "^7767^ at index #{idx}: unable to synchronically expand promise"
   return null
 
 #-----------------------------------------------------------------------------------------------------------
