@@ -26,10 +26,8 @@
   "dependencies": {
     "cnd": "^9.0.0",
     "intertype": "^7.0.1",
+    "letsfreezethat": "^2.2.5",
     "multimix": "^4.0.0"
   },
-  "devDependencies": {
-    "datom": "^5.0.0",
-    "guy-test": "^4.0.0"
-  }
+  "devDependencies": {}
 }
