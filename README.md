@@ -7,6 +7,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Motivation](#motivation)
+- [Sample Applications](#sample-applications)
 - [Notes](#notes)
     - [(Almost) A Two-Dimensional Syntax (in a way)](#almost-a-two-dimensional-syntax-in-a-way)
     - [Building Structures with Derived Crammers](#building-structures-with-derived-crammers)
@@ -14,6 +15,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+**Work in Progress**
 
 # Motivation
 
@@ -23,6 +25,10 @@
 * that are adaptable to a number of usages
 * for example, to output a particular flavor of HTML
 * own syntaxes may be defined by subclassing `CupOfJoe`
+
+# Sample Applications
+
+* https://github.com/loveencounterflow/datom#cup-of-datom
 
 # Notes
 
@@ -38,6 +44,8 @@
 * any argument to a call to `cram()` may be a function which will be called w/out arguments; if that
   function returns w/out having `cram()`med anything, its return value will be crammed unless it is `null`
   or `undefined` (**Note:** might allow `null`s in the future)
+
+
 
 ### (Almost) A Two-Dimensional Syntax (in a way)
 
