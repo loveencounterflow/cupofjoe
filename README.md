@@ -1,20 +1,43 @@
 
-## &#x2615; CupOfJoe &#x2615;
+# &#x2615; CupOfJoe &#x2615;
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX](#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
-  - [(Almost) A Two-Dimensional Syntax (in a way)](#almost-a-two-dimensional-syntax-in-a-way)
-  - [Building Structures with Derived Crammers](#building-structures-with-derived-crammers)
+- [Motivation](#motivation)
+- [Notes](#notes)
+    - [(Almost) A Two-Dimensional Syntax (in a way)](#almost-a-two-dimensional-syntax-in-a-way)
+    - [Building Structures with Derived Crammers](#building-structures-with-derived-crammers)
 - [Legacy](#legacy)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-## XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# Motivation
+
+* Provide a straightforward way to leverage CoffeeScript syntax to build templates for languages like HTML
+* without the magic involved in earlier approaches
+* building on generic structures
+* that are adaptable to a number of usages
+* for example, to output a particular flavor of HTML
+* own syntaxes may be defined by subclassing `CupOfJoe`
+
+# Notes
+
+* Three steps:
+  * structure building
+  * structure expansion
+  * structure formatting
+* good strategy to rather build one or more dedicated structure builders ('crammers') than to put too much
+  logic into structure formatting
+* structure expansion will elide all `null`s and `undefined`s
+* may not use async functions, promises; everything is synchronous
+* basic idea is building a list of nested lists
+* any argument to a call to `cram()` may be a function which will be called w/out arguments; if that
+  function returns w/out having `cram()`med anything, its return value will be crammed unless it is `null`
+  or `undefined` (**Note:** might allow `null`s in the future)
 
 ### (Almost) A Two-Dimensional Syntax (in a way)
 
@@ -83,7 +106,7 @@ Output (reformatted for readability):
   </paper>
 ```
 
-## Legacy
+# Legacy
 
 ```
          Markaby
