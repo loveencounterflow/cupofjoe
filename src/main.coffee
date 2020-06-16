@@ -32,42 +32,6 @@ remove_notgiven = ( list ) ->
   # return ( e for e in list when e? ) ### non-mutating variant ###
 
 #-----------------------------------------------------------------------------------------------------------
-@expand = ->
-  @_expand @collector
-  @collector = @collector.flat Infinity if @settings.flatten
-  return @_unwrap @collector
-
-#-----------------------------------------------------------------------------------------------------------
-@_expand = ( list ) ->
-  idx = -1
-  loop
-    idx++; break if idx > list.length - 1
-    unless ( x = list[ idx ] )? then list.splice idx, 1; idx--; continue
-    if ( type = type_of x ) is 'list'
-      if ( x = remove_notgiven x ).length is 0 then list.splice idx, 1; idx--; continue
-      @_expand list[ idx ] = x
-    else if type is 'function'
-      @target = []; x(); list[ idx .. idx ] = @target; idx--
-    else if type is 'asyncfunction'
-      throw new Error "^7767^ at index #{idx}: unable to synchronically expand async function"
-    else if type is 'promise'
-      throw new Error "^7767^ at index #{idx}: unable to synchronically expand promise"
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_unwrap = ( x ) ->
-  return x unless isa.list x
-  # x = x.filter ( e ) -> e? and not ( ( isa.list e ) and ( e.length is 0 ) )
-  return x unless x.length is 1
-  return x unless isa.list x[ 0 ]
-  return @_unwrap x[ 0 ]
-
-#-----------------------------------------------------------------------------------------------------------
-@cram = ( x... ) ->
-  @target.push x
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
 MAIN = @
 class Cupofjoe extends Multimix
   @include MAIN, { overwrite: false, }
@@ -77,9 +41,39 @@ class Cupofjoe extends Multimix
   constructor: ( settings = null) ->
     super()
     @settings   = { { flatten: false, }..., settings..., }
-    @collector  = []
-    @target     = @collector
+    @_crammed   = false
+    @clear()
     return @
+
+  #---------------------------------------------------------------------------------------------------------
+  expand: ->
+    @collector  = @collector.flat Infinity if @settings.flatten
+    R           = @collector
+    @clear()
+    return R
+
+  #---------------------------------------------------------------------------------------------------------
+  cram: ( x... ) ->
+    for p, idx in x
+      if isa.function p
+        prv_collector   = @collector
+        @collector      = []
+        @_crammed       = false
+        rvalue          = p()
+        if @_crammed
+          x[ idx .. idx ] = @collector
+        else
+          x[ idx .. idx ] = rvalue if rvalue?
+        @collector      = prv_collector
+    x = remove_notgiven x
+    @collector.push x unless x.length is 0
+    @_crammed = true
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  clear: ->
+    @collector = []
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 module.exports = { Cupofjoe, }
