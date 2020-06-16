@@ -1,6 +1,6 @@
 {
   "name": "cupofjoe",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Build generic nested structures with a Teacup-like syntax",
   "main": "lib/main.js",
   "scripts": {
