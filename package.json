@@ -25,7 +25,7 @@
   "homepage": "https://github.com/loveencounterflow/cupofjoe#readme",
   "dependencies": {
     "cnd": "^9.0.0",
-    "intertype": "^7.0.1",
+    "intertype": "^7.0.2",
     "multimix": "^4.0.0"
   },
   "devDependencies": {}
