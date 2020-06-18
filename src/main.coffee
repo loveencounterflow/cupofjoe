@@ -61,10 +61,8 @@ class Cupofjoe extends Multimix
         @collector      = []
         @_crammed       = false
         rvalue          = p()
-        if @_crammed
-          x[ idx .. idx ] = @collector
-        else
-          x[ idx .. idx ] = rvalue if rvalue?
+        if @_crammed    then  x[ idx .. idx ] = @collector
+        else if rvalue? then  x[ idx .. idx ] = rvalue
         @collector      = prv_collector
     x = remove_notgiven x
     @collector.push x unless x.length is 0
