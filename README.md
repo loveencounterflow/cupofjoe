@@ -45,6 +45,30 @@
   function returns w/out having `cram()`med anything, its return value will be crammed unless it is `null`
   or `undefined` (**Note:** might allow `null`s in the future)
 
+* do not write
+
+  ```coffee
+  # (A)
+    c.cram 'p', ->
+  # ^^^^^^ 1
+      c.cram null, "It is very ", ( c.cram 'em', "convenient" ), " to write"
+  #   ^^^^^^ 3                      ^^^^^^ 2
+  ```
+
+  do write
+
+  ```coffee
+  # (B)
+    c.cram 'p', ->
+  # ^^^^^^ 1
+      c.cram null, "It is very ", ( -> c.cram 'em', "convenient" ), " to write"
+  #   ^^^^^^ 2                      ^^^^^^ 3
+  ```
+
+  This is because in order to call a function, its arguments must first be evaluated, so calling order is
+  (as indicated by the numbers in `(A)`) not in the order the function calls appear in the text (maybe a
+  good argument *[pun intended]* in favor of Reverse Polish Notation).
+
 
 
 ### (Almost) A Two-Dimensional Syntax (in a way)
