@@ -36,13 +36,13 @@ MAIN = @
 class Cupofjoe extends Multimix
   @include MAIN, { overwrite: false, }
   # @extend MAIN, { overwrite: false, }
-  _defaults: { flatten: false, }
+  _defaults:      { flatten: false, }
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( settings = null) ->
     super()
-    @settings   = { @_defaults..., settings..., }
-    @_crammed   = false
+    @settings       = { @_defaults..., settings..., }
+    @_crammed       = false
     @clear()
     return @
 
@@ -52,6 +52,8 @@ class Cupofjoe extends Multimix
     R           = @collector
     @clear()
     return R
+
+  #---------------------------------------------------------------------------------------------------------
 
   #---------------------------------------------------------------------------------------------------------
   cram: ( x... ) ->
